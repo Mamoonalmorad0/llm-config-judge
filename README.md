@@ -68,11 +68,12 @@ Passed within 3 attempts:  5/5
 | 2 | gemini-3.5-flash | after the fix | 5/5 | 5/5 |
 | 3 | gemini-3.5-flash | after the fix | 5/5 | 5/5 |
 | 4 | gemini-3.8-flash | after the fix | 5/5 | 5/5 |
+| 5 | gemini-3.5-flash-lite | after the fix | 5/5 | 5/5 |
 
 **What I learned**
 
 - In the first run, the model seemed to fail two of five tasks. When I looked at the failures, both were caused by my judge, not the model. The judge rendered templates with Jinja's `trim_blocks` setting, which removes the line break after a block tag such as `{% endif %}`. The model wrote its templates for Jinja's default settings, so two command lines were merged into one.
-- After switching the judge to Jinja's default settings, the model passed every task on the first attempt in three runs.
+- After switching the judge to Jinja's default settings, every model passed every task on the first attempt, in four runs with three models, including the smaller Flash-Lite model.
 - An automatic judge can report failures that are not the model's fault, so it is worth inspecting the failures before trusting the numbers.
 - The current five tasks are too easy to tell models apart. The next step is harder tasks.
 
