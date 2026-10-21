@@ -132,13 +132,17 @@ def main():
         first_ok = sum(1 for r in results if r["attempts"][0].get("passed"))
         final_ok = sum(1 for r in results if r["attempts"][-1].get("passed"))
         print(f"\nPassed on the first attempt: {first_ok}/{n}")
-        print(f"Passed within {args.attempts} attempts:  {final_ok}/{n}")
+        word = "attempt" if args.attempts == 1 else "attempts"
+        print(f"Passed within {args.attempts} {word}:  {final_ok}/{n}")
 
     out_dir = ROOT / "results"
     out_dir.mkdir(exist_ok=True)
     stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     model = getattr(llm, "model", "fake")
     name = f"{stamp}-{model}" + ("-incomplete" if stopped else "")
+    base, i = name, 2
+    while (out_dir / f"{name}.json").exists():  # two runs in the same second
+        name, i = f"{base}-{i}", i + 1
     (out_dir / f"{name}.json").write_text(json.dumps(results, indent=2), encoding="utf-8")
     with open(out_dir / f"{name}.csv", "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)

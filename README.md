@@ -22,6 +22,8 @@ The judge is a test oracle, so it has tests too (`tests/test_judge.py`). For exa
 
 ## Run it
 
+Requires Python 3.10 or newer (tested on 3.10, 3.12 and 3.13).
+
 ```bash
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
