@@ -12,7 +12,7 @@ import threading
 import time
 
 from judge import STAGES, judge
-from llm import FakeLLM, GeminiLLM
+from llm import FakeLLM, GeminiLLM, LLMError
 from prompts import extract_template, first_prompt, retry_prompt
 
 ROOT = Path(__file__).parent
@@ -103,7 +103,10 @@ def main():
     parser.add_argument("--tasks", default=str(ROOT / "tasks" / "tasks.json"))
     args = parser.parse_args()
 
-    llm = demo_llm() if args.llm == "fake" else GeminiLLM(args.model)
+    try:
+        llm = demo_llm() if args.llm == "fake" else GeminiLLM(args.model, timeout=args.timeout)
+    except LLMError as e:
+        raise SystemExit(f"Error: {e}")
     delay = args.delay if args.delay is not None else (0.0 if args.llm == "fake" else 5.0)
     tasks = load_tasks(args.tasks)
 
