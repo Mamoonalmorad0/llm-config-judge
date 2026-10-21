@@ -1,0 +1,4 @@
+ip access-list extended {{ acl_name }}
+{% for rule in rules %}
+ {{ rule.action }} {{ rule.protocol }} {{ rule.source }} {{ rule.destination }}{{ " eq " ~ rule.port if rule.port is not none else "" }}
+{% endfor %}

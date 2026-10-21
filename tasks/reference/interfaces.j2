@@ -1,0 +1,10 @@
+{% for intf in interfaces %}
+interface {{ intf.name }}
+ description {{ intf.description }}
+ ip address {{ intf.ip }} {{ intf.mask }}
+{% if intf.enabled %}
+ no shutdown
+{% else %}
+ shutdown
+{% endif %}
+{% endfor %}

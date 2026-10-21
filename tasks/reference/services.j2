@@ -1,0 +1,6 @@
+{% for server in ntp_servers %}
+ntp server {{ server }}
+{% endfor %}
+{% for server in dns_servers %}
+ip name-server {{ server }}
+{% endfor %}

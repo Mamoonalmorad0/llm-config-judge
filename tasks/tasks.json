@@ -1,0 +1,123 @@
+[
+  {
+    "id": "hostname",
+    "description": "Set the hostname and the DNS domain. Commands: 'hostname <hostname>' and then 'ip domain-name <domain>'.",
+    "data": {"hostname": "edge-router-1", "domain": "lab.local"},
+    "expected": [
+      "hostname edge-router-1",
+      "ip domain-name lab.local"
+    ],
+    "hidden_data": {"hostname": "core-sw-7", "domain": "corp.example"},
+    "hidden_expected": [
+      "hostname core-sw-7",
+      "ip domain-name corp.example"
+    ]
+  },
+  {
+    "id": "interfaces",
+    "description": "For each interface, in the given order: 'interface <name>', then indented by one space: 'description <description>', 'ip address <ip> <mask>', and 'no shutdown' if enabled is true or 'shutdown' if it is false.",
+    "data": {
+      "interfaces": [
+        {"name": "GigabitEthernet0/0", "description": "Uplink to ISP", "ip": "203.0.113.2", "mask": "255.255.255.252", "enabled": true},
+        {"name": "GigabitEthernet0/1", "description": "Office LAN", "ip": "10.0.10.1", "mask": "255.255.255.0", "enabled": true},
+        {"name": "GigabitEthernet0/2", "description": "Unused", "ip": "10.0.20.1", "mask": "255.255.255.0", "enabled": false}
+      ]
+    },
+    "expected": [
+      "interface GigabitEthernet0/0",
+      " description Uplink to ISP",
+      " ip address 203.0.113.2 255.255.255.252",
+      " no shutdown",
+      "interface GigabitEthernet0/1",
+      " description Office LAN",
+      " ip address 10.0.10.1 255.255.255.0",
+      " no shutdown",
+      "interface GigabitEthernet0/2",
+      " description Unused",
+      " ip address 10.0.20.1 255.255.255.0",
+      " shutdown"
+    ],
+    "hidden_data": {
+      "interfaces": [
+        {"name": "TenGigabitEthernet1/0/1", "description": "Core link", "ip": "172.16.0.1", "mask": "255.255.255.254", "enabled": false},
+        {"name": "Vlan10", "description": "Users gateway", "ip": "10.10.0.1", "mask": "255.255.0.0", "enabled": true}
+      ]
+    },
+    "hidden_expected": [
+      "interface TenGigabitEthernet1/0/1",
+      " description Core link",
+      " ip address 172.16.0.1 255.255.255.254",
+      " shutdown",
+      "interface Vlan10",
+      " description Users gateway",
+      " ip address 10.10.0.1 255.255.0.0",
+      " no shutdown"
+    ]
+  },
+  {
+    "id": "vlans",
+    "description": "For each VLAN, in the given order: 'vlan <id>', then indented by one space: 'name <name>'.",
+    "data": {"vlans": [{"id": 10, "name": "users"}, {"id": 20, "name": "voice"}, {"id": 99, "name": "management"}]},
+    "expected": [
+      "vlan 10",
+      " name users",
+      "vlan 20",
+      " name voice",
+      "vlan 99",
+      " name management"
+    ],
+    "hidden_data": {"vlans": [{"id": 30, "name": "guests"}, {"id": 40, "name": "cameras"}]},
+    "hidden_expected": [
+      "vlan 30",
+      " name guests",
+      "vlan 40",
+      " name cameras"
+    ]
+  },
+  {
+    "id": "services",
+    "description": "First one line 'ntp server <ip>' per NTP server, then one line 'ip name-server <ip>' per DNS server, in the given order.",
+    "data": {"ntp_servers": ["192.0.2.10", "192.0.2.11"], "dns_servers": ["198.51.100.53"]},
+    "expected": [
+      "ntp server 192.0.2.10",
+      "ntp server 192.0.2.11",
+      "ip name-server 198.51.100.53"
+    ],
+    "hidden_data": {"ntp_servers": ["203.0.113.123"], "dns_servers": ["9.9.9.9", "149.112.112.112"]},
+    "hidden_expected": [
+      "ntp server 203.0.113.123",
+      "ip name-server 9.9.9.9",
+      "ip name-server 149.112.112.112"
+    ]
+  },
+  {
+    "id": "access_list",
+    "description": "Start with 'ip access-list extended <acl_name>'. Then one rule per line, indented by one space: '<action> <protocol> <source> <destination>', followed by ' eq <port>' only when port is not null.",
+    "data": {
+      "acl_name": "WEB-IN",
+      "rules": [
+        {"action": "permit", "protocol": "tcp", "source": "any", "destination": "host 10.0.10.5", "port": 443},
+        {"action": "permit", "protocol": "tcp", "source": "any", "destination": "host 10.0.10.5", "port": 80},
+        {"action": "deny", "protocol": "ip", "source": "any", "destination": "any", "port": null}
+      ]
+    },
+    "expected": [
+      "ip access-list extended WEB-IN",
+      " permit tcp any host 10.0.10.5 eq 443",
+      " permit tcp any host 10.0.10.5 eq 80",
+      " deny ip any any"
+    ],
+    "hidden_data": {
+      "acl_name": "SSH-MGMT",
+      "rules": [
+        {"action": "permit", "protocol": "tcp", "source": "10.0.99.0 0.0.0.255", "destination": "any", "port": 22},
+        {"action": "deny", "protocol": "tcp", "source": "any", "destination": "any", "port": 22}
+      ]
+    },
+    "hidden_expected": [
+      "ip access-list extended SSH-MGMT",
+      " permit tcp 10.0.99.0 0.0.0.255 any eq 22",
+      " deny tcp any any eq 22"
+    ]
+  }
+]
